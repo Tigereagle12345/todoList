@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-uk">
+    <head>
+        <title>Todo List</title>
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <script type="text/javascript" src="index.js"></script>
+        <script src="https://kit.fontawesome.com/a86babebc4.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="index.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+    </head>
+    <body>
+        <header>
+            <div class="banner"><h1>TODO List:</h1></div>
+        </header>
+        <main>
+            <div id="clear">
+                <button onclick="clearTasks()">Clear Tasks</button>
+            </div>
+            <div id="add-task-button-box">
+                <button id="add-task-button" onclick="addTask()"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="add-task">
+                <form>
+                    <input type="text" id="taskName" placeholder="Task Name:" required>
+                    <input type="text" id="taskDesc" placeholder="Task Description:" required>
+                    <input type="date" id="dueDate" required>
+                    <input type="button" value="Add Task" onclick="addTask()">
+                </form>
+            </div>
+            <div id="tasks"></div>
+        </main>
+    </body>
+</html>
