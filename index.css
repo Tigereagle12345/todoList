@@ -170,3 +170,14 @@ button #clear {
     top: 0px;
     left: 10px;
 }
+
+footer {
+    color: var(--three);
+    font-size: 15px;
+    text-align: center;
+}
+
+.fa-copyright {
+    color: inherit;
+    font-size: inherit;
+}
