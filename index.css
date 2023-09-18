@@ -89,6 +89,21 @@ input[type="date"] {
     right: 10px;
 }
 
+.dropdown {
+    border: none;
+    color: var(--two);
+    background: transparent;
+    outline: none;
+    scroll-behavior: smooth;
+}
+
+.dropdown option {
+    background: var(--three); 
+    color: var(--two); 
+    outline: none;
+    border: none;
+}
+
 #clear {
     display: flex;
     justify-content: center;
