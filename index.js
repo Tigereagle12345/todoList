@@ -9,12 +9,12 @@ function saveTask(id, changed, elemType) {
 
 function saveDate(id, changed, elemType) {
     window.tasks.tasks[id][elemType] = changed.value;
-    let status = checkPriority(window.tasks.tasks[id]["dueDate"]);
+    let status = checkPriority(window.tasks.tasks[id]["dueDate"], id);
     
     window.tasks.tasks[id].status = status;
 
     const task = document.getElementById(id);
-    statusIcon = task.querySelector(".status");
+    let statusIcon = task.querySelector(".status");
     
     if (status == 0) {
         statusIcon.classList.add("fa-exclamation");
@@ -43,6 +43,42 @@ function saveDate(id, changed, elemType) {
     localStorage.setItem("tasks", JSON.stringify(window.tasks));
 }
 
+function saveStatus(id, changed, elemType) {
+    window.tasks.tasks[id][elemType] = changed.value;
+
+    let status = checkPriority(window.tasks.tasks[id].dueDate, id);
+
+    const task = document.getElementById(id);
+    let statusIcon = task.querySelector(".status");
+    
+    if (status == 0) {
+        statusIcon.classList.add("fa-exclamation");
+        statusIcon.classList.add("overdue");
+
+        statusIcon.classList.remove("due-soon");
+        statusIcon.classList.remove("fa-check");
+    } else if (status == 1) {
+        statusIcon.classList.add("fa-exclamation");
+        statusIcon.classList.add("due-soon");
+
+        statusIcon.classList.remove("overdue");
+        statusIcon.classList.remove("fa-check");
+    } else if (status == 2) {
+        statusIcon.classList.add("fa-check");
+
+        statusIcon.classList.remove("overdue");
+        statusIcon.classList.remove("due-soon");
+    } else {
+        statusIcon.classList.remove("overdue");
+        statusIcon.classList.remove("due-soon");
+        statusIcon.classList.remove("fa-check");
+        statusIcon.classList.remove("fa-exclamation");
+    }
+
+
+    localStorage.setItem("tasks", JSON.stringify(window.tasks));
+}
+
 function getTasks() {
     //localStorage.removeItem("tasks");
     const obj = '{"taskCount":-1,"tasks": {"0":{"name":"Test", "desc":"This task is an experiment", "dueDate":"9/8/2023", "id":0, "status":0, "complete":"Started"}}}';
@@ -55,22 +91,28 @@ function getTasks() {
     var tasks = JSON.parse(tasks);
     window.tasks = tasks;
     renderTasks();
+    debug();
 }
 
 function renderTasks() {
     for (let task in window.tasks.tasks) {
-        let status = checkPriority(window.tasks.tasks[task].dueDate);
+        let status = checkPriority(window.tasks.tasks[task].dueDate, window.tasks.tasks[task].id);
         renderTask(
                 window.tasks.tasks[task].id,
                 window.tasks.tasks[task].name,
                 window.tasks.tasks[task].desc,
                 window.tasks.tasks[task].dueDate,
+                window.tasks.tasks[task].complete,
                 status
                 )
     }
 }
 
-function renderTask(count, name, desc, date, status) {
+function renderTask(count, name, desc, date, complete="N/A", status) {
+    if (!complete) {
+        let complete = "N/A"
+    }
+    
     const tasks = document.getElementById("tasks");
     
     const taskbox = document.createElement("div");
@@ -80,6 +122,8 @@ function renderTask(count, name, desc, date, status) {
 
     const task = document.createElement("div");
 
+
+    // Close
     const close = document.createElement("button");
     close.id = count;
     close.classList.add("task-close");
@@ -88,6 +132,8 @@ function renderTask(count, name, desc, date, status) {
     icon.classList.add("fa-x");
     close.appendChild(icon);
 
+
+    // Status icon
     const statusIcon = document.createElement("i");
     statusIcon.classList.add("fa-solid");
     statusIcon.classList.add("status");
@@ -116,7 +162,7 @@ function renderTask(count, name, desc, date, status) {
         statusIcon.classList.remove("fa-exclamation");
     }
 
-
+    // Title
     const head = document.createElement("h2");
     const title = document.createElement("span");
     title.contentEditable = "True";
@@ -125,6 +171,7 @@ function renderTask(count, name, desc, date, status) {
     title.appendChild(titleText);
     head.appendChild(title);
 
+    // Due Date
     const dueDate = document.createElement("h4");
     const due = document.createElement("input");
     due.type = "date";
@@ -132,10 +179,32 @@ function renderTask(count, name, desc, date, status) {
     due.classList.add("task-input");
     dueDate.appendChild(due);
 
+    // Completed
+    const completed = document.createElement("h4");
+    const completeText = document.createTextNode("Status: ");
+    const dropdown = document.createElement("select");
+    dropdown.classList.add("dropdown");
+    const options = ["N/A", "Not Started", "Started", "Almost Finished", "Completed!"];
+    for (let i = 0; i < options.length; i++) {
+        const option = document.createElement("option");
+        option.value = options[i];
+        if (options[i] == complete) {
+            option.selected = "selected";
+        }
+        optionText = document.createTextNode(options[i]);
+
+        option.appendChild(optionText);
+        dropdown.appendChild(option);
+    }
+    completed.appendChild(completeText);
+    completed.appendChild(dropdown);
+    
+    // Br
     const br = document.createElement("p");
     const brText = document.createTextNode("");
     br.appendChild(brText);
 
+    // Description
     const body = document.createElement("p");
     const taskDesc = document.createElement("span");
     taskDesc.contentEditable = "True";
@@ -144,30 +213,36 @@ function renderTask(count, name, desc, date, status) {
     taskDesc.appendChild(descText);
     body.appendChild(taskDesc);
     
+    // Add elements to task
     task.appendChild(statusIcon);
     task.appendChild(close);
     task.appendChild(br);
     task.appendChild(head);
     task.appendChild(dueDate);
     task.appendChild(br);
+    task.appendChild(completed);
+    task.appendChild(br);
     task.appendChild(body);
 
+    // Add task to DOM
     taskbox.appendChild(task);
     tasks.appendChild(taskbox);
 
     close.addEventListener("click", function() {killTask(count)});
     title.addEventListener("input", function() {saveTask(count, this, "name")});
     due.addEventListener("input", function() {saveDate(count, this, "dueDate")});
-    taskDesc.addEventListener("input", function() {saveTask(count, this, "desc")});
+    dropdown.addEventListener("change", function() {saveStatus(count, this, "complete")})
+    taskDesc.addEventListener("input", function() {saveStatus(count, this, "status")});
 }
 
-function checkPriority(dueDate) {
+
+function checkPriority(dueDate, id) {
     const date = new Date();
     const due = new Date(dueDate);
 
     let diff = (due.getTime() - date.getTime()) / (1000 * 3600 * 24);
 
-    if (diff >= 3) {
+    if ((diff >= 3) || (window.tasks.tasks[id].complete == "Completed!")) {
         status = 2;
     } else if (diff > 0) {
         status = 1;
@@ -187,11 +262,13 @@ function addTask(
 ) {
     let count = (parseInt(window.tasks.taskCount) + 1).toString();
 
-    let status = checkPriority(date);
+    let status = checkPriority(date, count);
 
-    renderTask(count, name.value, desc.value, date.value, status);
+    let complete = "N/A";
 
-    window.tasks.tasks[count] = {"name":name.value, "desc":desc.value, "dueDate":date.value, "id":count, "status":status};
+    renderTask(count, name.value, desc.value, date.value, complete, status);
+
+    window.tasks.tasks[count] = {"name":name.value, "desc":desc.value, "dueDate":date.value, "id":count, "status":status, "complete":complete};
     localStorage.setItem("tasks", JSON.stringify(window.tasks));
 
     name.value = null;
@@ -216,3 +293,13 @@ function clearTasks() {
         localStorage.setItem("tasks", JSON.stringify(window.tasks));
     }
 }
+
+// Debug
+function debug() {
+    for (task in window.tasks.tasks) {
+        if (!window.tasks.tasks[task].complete) {
+            window.tasks.tasks[task].complete = "N/A"
+        }
+    }
+    localStorage.setItem("tasks", JSON.stringify(window.tasks));
+};
