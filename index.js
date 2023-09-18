@@ -33,6 +33,7 @@ function saveDate(id, changed, elemType) {
 
         statusIcon.classList.remove("overdue");
         statusIcon.classList.remove("due-soon");
+        statusIcon.classList.remove("fa-exclamation");
     } else {
         statusIcon.classList.remove("overdue");
         statusIcon.classList.remove("due-soon");
@@ -68,6 +69,7 @@ function saveStatus(id, changed, elemType) {
 
         statusIcon.classList.remove("overdue");
         statusIcon.classList.remove("due-soon");
+        statusIcon.classList.remove("fa-exclamation");
     } else {
         statusIcon.classList.remove("overdue");
         statusIcon.classList.remove("due-soon");
@@ -232,7 +234,7 @@ function renderTask(count, name, desc, date, complete="N/A", status) {
     title.addEventListener("input", function() {saveTask(count, this, "name")});
     due.addEventListener("input", function() {saveDate(count, this, "dueDate")});
     dropdown.addEventListener("change", function() {saveStatus(count, this, "complete")})
-    taskDesc.addEventListener("input", function() {saveStatus(count, this, "status")});
+    taskDesc.addEventListener("input", function() {saveTask(count, this, "desc")});
 }
 
 
@@ -241,8 +243,10 @@ function checkPriority(dueDate, id) {
     const due = new Date(dueDate);
 
     let diff = (due.getTime() - date.getTime()) / (1000 * 3600 * 24);
+    
+    let complete = window.tasks.tasks[id].complete;
 
-    if ((diff >= 3) || (window.tasks.tasks[id].complete == "Completed!")) {
+    if ((diff >= 3) || (complete == "Completed!")) {
         status = 2;
     } else if (diff > 0) {
         status = 1;
@@ -262,13 +266,14 @@ function addTask(
 ) {
     let count = (parseInt(window.tasks.taskCount) + 1).toString();
 
-    let status = checkPriority(date, count);
-
     let complete = "N/A";
+
+    window.tasks.tasks[count] = {"name":name.value, "desc":desc.value, "dueDate":date.value, "id":count, "status":"", "complete":complete};
+    
+    let status = checkPriority(date, count);
 
     renderTask(count, name.value, desc.value, date.value, complete, status);
 
-    window.tasks.tasks[count] = {"name":name.value, "desc":desc.value, "dueDate":date.value, "id":count, "status":status, "complete":complete};
     localStorage.setItem("tasks", JSON.stringify(window.tasks));
 
     name.value = null;
