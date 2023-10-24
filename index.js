@@ -168,6 +168,7 @@ function renderTask(count, name, desc, date, complete="N/A", status) {
     const head = document.createElement("h2");
     const title = document.createElement("span");
     title.contentEditable = "True";
+    title.spellcheck = "False";
     const titleText = document.createTextNode(name);
     title.classList.add("task-input");
     title.appendChild(titleText);
@@ -210,6 +211,7 @@ function renderTask(count, name, desc, date, complete="N/A", status) {
     const body = document.createElement("p");
     const taskDesc = document.createElement("span");
     taskDesc.contentEditable = "True";
+    taskDesc.spellcheck = "False";
     const descText = document.createTextNode(desc);
     taskDesc.classList.add("task-input");
     taskDesc.appendChild(descText);
