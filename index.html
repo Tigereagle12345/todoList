@@ -20,7 +20,7 @@
                 <button id="add-task-button" onclick="addTask()"><i class="fa-solid fa-plus"></i></button>
             </div>
             <div class="add-task">
-                <form>
+                <form autocomplete="off">
                     <input type="text" id="taskName" placeholder="Task Name:" required>
                     <input type="text" id="taskDesc" placeholder="Task Description:" required>
                     <input type="date" id="dueDate" required>
@@ -30,8 +30,9 @@
             <div id="tasks"></div>
         </main>
         <footer>
-            <br>
-            <p><i class="fa-regular fa-copyright"></i> 2023 Tigereagle12345</p>
+            <div class="copyright">
+                <p><i class="fa-regular fa-copyright"></i> 2023 Eamon O'Leary</p>
+            </div>
         </footer>
     </body>
 </html>
