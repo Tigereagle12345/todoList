@@ -1,5 +1,5 @@
 /*Main*/
-* { margin: 0; padding: 0 }
+* { margin: 0; padding: 0;}
 
 :root {
     --four: #F0F0F0;
@@ -39,6 +39,7 @@ input, span[contenteditable="true"] {
     outline: none;
     padding: 5px;
     border-radius: 25px;
+    white-space: pre-wrap;
 }
 
 input[type="text"] {
